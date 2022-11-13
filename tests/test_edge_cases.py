@@ -16,7 +16,7 @@ def test_text_extraction():
         Taking into consideration word boundaries.
     """
 
-    tracking_number = get_tracking_number("This is a test! 9405511108078863434863 TrackingCode")
+    tracking_number = get_tracking_number("Tracking Number for usps:0307 1790 0005 2348 3741 ")
 
     assert tracking_number is not None
     assert tracking_number.courier.code == "usps"

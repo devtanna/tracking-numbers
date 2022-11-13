@@ -6,7 +6,7 @@ from typing import Union
 
 def pcre_to_python_re(regex: str) -> Pattern:
     """Converts a PCRE (Perl) to a Python-compatible regex"""
-    return re.compile(regex.replace("(?<", "(?P<"))
+    return re.compile(f'(\\b{regex.replace("(?<", "(?P<")}\\b)', re.M|re.I)
 
 
 def parse_regex(raw_regex: Union[str, List[str]]) -> Pattern:

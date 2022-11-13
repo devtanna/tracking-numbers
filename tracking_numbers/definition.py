@@ -110,20 +110,21 @@ class TrackingNumberDefinition:
         )
 
     def test(self, tracking_number: str) -> Optional[TrackingNumber]:
-        match = self.number_regex.search(tracking_number)
+        match = self.number_regex.search(tracking_number)  # TODO: handle multiple matches
         if not match:
             return None
 
+        parsed_tracking_number = match.group().strip()
         match_data = match.groupdict() if match else {}
-        serial_number = self._get_serial_number(match_data)
+        serial_number = self._get_serial_number(match_data)  # TODO: clean the match_data
         validation_errors = self._get_validation_errors(serial_number, match_data)
 
         return TrackingNumber(
-            number=tracking_number,
+            number=parsed_tracking_number,
             courier=self.courier,
             product=self.product,
             serial_number=serial_number,
-            tracking_url=self.tracking_url(tracking_number),
+            tracking_url=self.tracking_url(parsed_tracking_number),
             validation_errors=validation_errors,
         )
 
