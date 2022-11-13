@@ -28,6 +28,8 @@ class ChecksumValidator(metaclass=ABCMeta):
             return S10()
         elif strategy == "mod7":
             return Mod7()
+        elif strategy == "mod_37_36":
+            return Mod37_36()
         elif strategy == "mod10":
             return Mod10(
                 odds_multiplier=checksum_spec.get("odds_multiplier"),
@@ -101,6 +103,60 @@ class Mod10(ChecksumValidator):
 class Mod7(ChecksumValidator):
     def passes(self, serial_number: SerialNumber, check_digit: int) -> bool:
         return check_digit == (to_int(serial_number) % 7)
+
+class Mod37_36(ChecksumValidator):
+    def passes(self, serial_number: SerialNumber, check_digit: int) -> bool:
+        mod = 36
+        weights = {
+            "A": 10,
+            "B": 11,
+            "C": 12,
+            "D": 13,
+            "E": 14,
+            "F": 15,
+            "G": 16,
+            "H": 17,
+            "I": 18,
+            "J": 19,
+            "K": 20,
+            "L": 21,
+            "M": 22,
+            "N": 23,
+            "O": 24,
+            "P": 25,
+            "Q": 26,
+            "R": 27,
+            "S": 28,
+            "T": 29,
+            "U": 30,
+            "V": 31,
+            "W": 32,
+            "X": 33,
+            "Y": 34,
+            "Z": 35,
+        }
+        compiled_digit = mod
+        for _, character in enumerate(serial_number):
+            val = weights.get(character, int(character))
+            compiled_digit += val
+            compiled_digit = (
+                compiled_digit - mod if compiled_digit > mod else compiled_digit
+            )
+            compiled_digit = compiled_digit * 2
+            compiled_digit = (
+                compiled_digit - (mod + 1) if compiled_digit > mod else compiled_digit
+            )
+
+        compiled_digit = (mod + 1) - compiled_digit
+        compiled_digit = 0 if compiled_digit == mod else compiled_digit
+        computed = None
+        if compiled_digit >= 10:
+            inverted_weights = dict((v, k) for k, v in weights.items())
+            computed = inverted_weights.get(compiled_digit)
+        else:
+            computed = str(compiled_digit)
+
+        return computed == check_digit
 
 
 class SumProductWithWeightsAndModulo(ChecksumValidator):
