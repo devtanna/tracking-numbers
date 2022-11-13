@@ -110,7 +110,7 @@ class TrackingNumberDefinition:
         )
 
     def test(self, tracking_number: str) -> Optional[TrackingNumber]:
-        match = self.number_regex.fullmatch(tracking_number)
+        match = self.number_regex.search(tracking_number)
         if not match:
             return None
 
