@@ -10,14 +10,4 @@ def test_usps_not_confused_for_dhl():
 
     assert tracking_number is not None
     assert tracking_number.courier.code == "usps"
-
-def test_text_extraction():
-    """ Tests that a tracking number can be extracted from a string of text.
-        Taking into consideration word boundaries.
-    """
-
-    tracking_number = get_tracking_number("Tracking Number for usps:0307 1790 0005 2348 3741 ")
-
-    assert tracking_number is not None
-    assert tracking_number.courier.code == "usps"
     assert tracking_number.number == "9405511108078863434863"
