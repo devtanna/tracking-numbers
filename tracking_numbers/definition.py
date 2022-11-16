@@ -110,13 +110,13 @@ class TrackingNumberDefinition:
         )
 
     def test(self, tracking_number: str) -> Optional[TrackingNumber]:
-        match = self.number_regex.search(tracking_number)  # TODO: handle multiple matches
+        match = self.number_regex.fullmatch(tracking_number)
         if not match:
             return None
 
         parsed_tracking_number = match.group().strip()
         match_data = match.groupdict() if match else {}
-        serial_number = self._get_serial_number(match_data)  # TODO: clean the match_data
+        serial_number = self._get_serial_number(match_data)
         validation_errors = self._get_validation_errors(serial_number, match_data)
 
         return TrackingNumber(
@@ -127,6 +127,30 @@ class TrackingNumberDefinition:
             tracking_url=self.tracking_url(parsed_tracking_number),
             validation_errors=validation_errors,
         )
+
+    def search(self, search_text: str) -> Optional[List[TrackingNumber]]:
+        match = self.number_regex.finditer(search_text)
+        if not match:
+            return None
+
+        tracking_numbers = []
+        for match in match:
+            parsed_tracking_number = match.group().strip()
+            match_data = match.groupdict() if match else {}
+            serial_number = self._get_serial_number(match_data)  # TODO: clean the match_data
+            validation_errors = self._get_validation_errors(serial_number, match_data)
+            tracking_numbers.append(
+                TrackingNumber(
+                    number=parsed_tracking_number,
+                    courier=self.courier,
+                    product=self.product,
+                    serial_number=serial_number,
+                    tracking_url=self.tracking_url(parsed_tracking_number),
+                    validation_errors=validation_errors,
+                )
+            )
+
+        return tracking_numbers
 
     def _get_serial_number(self, match_data: MatchData) -> Optional[SerialNumber]:
         raw_serial_number = match_data.get("SerialNumber")
