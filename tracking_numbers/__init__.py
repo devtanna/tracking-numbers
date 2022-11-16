@@ -23,10 +23,14 @@ def get_tracking_number(number: str) -> Optional[TrackingNumber]:
     return None
 
 def tracking_number_search(search_text: str) -> Optional[List[TrackingNumber]]:
+    tracking_numbers = []
     for tn_definition in DEFINITIONS:
-        tracking_numbers = tn_definition.search(search_text)
-        if tracking_numbers:
-            return tracking_numbers
+        results = tn_definition.search(search_text)
+        if results:
+            tracking_numbers.extend(results)
+
+    if tracking_numbers:
+        return tracking_numbers
 
     return None
 
