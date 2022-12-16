@@ -135,7 +135,7 @@ class TrackingNumberDefinition:
 
         tracking_numbers = []
         for match in match:
-            parsed_tracking_number = match.group().strip()
+            parsed_tracking_number = match.group().strip().replace(" ", "")
             match_data = match.groupdict() if match else {}
             serial_number = self._get_serial_number(match_data)  # TODO: clean the match_data
             validation_errors = self._get_validation_errors(serial_number, match_data)
@@ -190,7 +190,8 @@ class TrackingNumberDefinition:
             return "checksum", "SerialNumber not found"
 
         check_digit = match_data.get("CheckDigit")
-        if not check_digit:
+        # TODO: check_digit must always be a digit?
+        if not check_digit or not check_digit.strip().isdigit():
             return "checksum", "CheckDigit not found"
 
         passes_checksum = self.checksum_validator.passes(
